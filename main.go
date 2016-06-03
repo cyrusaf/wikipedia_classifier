@@ -5,6 +5,7 @@ import (
   "log"
   "regexp"
   "strings"
+  "os"
 
   "github.com/PuerkitoBio/goquery"
 )
@@ -63,7 +64,7 @@ func (subcategory *Subcategory) GetPages() {
 
   doc.Find(".mw-category-group+ .mw-category-group a").Each(func(i int, s *goquery.Selection) {
     page := Page{}
-    page.Name = s.Text()
+    page.Name = strings.Replace(s.Text(), "/", "_", -1)
     page.Url, _ = s.Attr("href")
     page.Url = "https://en.wikipedia.org" + page.Url
     subcategory.Pages = append(subcategory.Pages, page)
@@ -117,7 +118,7 @@ func GetSubcategories() []Subcategory {
   subcategories := make([]Subcategory, 0)
   // Get Subcategories
   doc.Find("#mw-content-text div div .hlist li+ li a").Each(func(i int, s *goquery.Selection) {
-    name := s.Text()
+    name := strings.Replace(s.Text(), "/", "_", -1)
     url, _ := s.Attr("href")
     subcategory := Subcategory{}
     subcategory.Name = name
@@ -167,6 +168,22 @@ func main() {
         //fmt.Println(j, len(sub.Pages))
         sub.Pages[j].GetContent()
       }
+
+      err := os.MkdirAll("data/" + sub.Name, 0777)
+      if (err != nil) {
+        fmt.Println(err)
+      } else {
+        for j := 0; j < len(sub.Pages); j++ {
+          f, err := os.Create("data/" + sub.Name + "/" + sub.Pages[j].Name)
+          if (err != nil) {
+            fmt.Println(err)
+            continue
+          }
+          defer f.Close()
+          f.WriteString(sub.Pages[j].Content)
+        }
+      }
+
       getContentChan <- sub
     })
   }
