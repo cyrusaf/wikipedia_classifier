@@ -4,6 +4,8 @@ import (
   "fmt"
   "io/ioutil"
   "sync"
+  "os"
+  "strconv"
 
   "github.com/go-yaml/yaml"
   "github.com/PuerkitoBio/goquery"
@@ -60,7 +62,8 @@ func FetchCategoryDocuments(cat_name string, links[]string) []string {
       // Fetch webpage
       doc, err := goquery.NewDocument(link)
       if err != nil {
-        panic(err)
+        fmt.Printf("x")
+        return
       }
 
       // Find document content
@@ -92,4 +95,12 @@ func main() {
     category_docs[cat_name] = FetchCategoryDocuments(cat_name, links)
   }
 
+  // Save documents to /documents
+  for cat_name, documents := range category_docs {
+    os.MkdirAll("documents/" + cat_name, 0755)
+    for i, document := range documents {
+      file_name := "documents/" + cat_name + "/" + strconv.Itoa(i)
+      ioutil.WriteFile(file_name, []byte(document), 0755)
+    }
+  }
 }
