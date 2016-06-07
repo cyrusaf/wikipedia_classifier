@@ -61,6 +61,7 @@ func FetchCategoryDocuments(catName string, links []string) []string {
 
 	var documents []string
 	var wg sync.WaitGroup
+	mutex := &sync.Mutex{}
 
 	for i := 0; i < len(links); i++ {
 		link := links[i]
@@ -71,7 +72,7 @@ func FetchCategoryDocuments(catName string, links []string) []string {
 			// Fetch webpage
 			doc, err := goquery.NewDocument(link)
 			if err != nil {
-				bar.Incr()
+				// bar.Incr()
 				return
 			}
 
@@ -81,7 +82,9 @@ func FetchCategoryDocuments(catName string, links []string) []string {
 				content += s.Text()
 			})
 
+			mutex.Lock()
 			documents = append(documents, content)
+			mutex.Unlock()
 			bar.Incr()
 		}()
 	}
