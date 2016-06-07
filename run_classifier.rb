@@ -27,4 +27,3 @@ end
 
 puts "Classifying #{ARGV[0]}..."
 puts classifyLink(ARGV[0])
-puts $cls.classify("sports basketball soccer baseball")
