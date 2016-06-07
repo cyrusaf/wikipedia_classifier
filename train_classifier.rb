@@ -2,20 +2,20 @@ require 'stuff-classifier'
 
 cls = StuffClassifier::Bayes.new("Wikipedia")
 
-total_cats = Dir.entries('data').length
-i = 0
+total_cats = Dir.entries('documents').length - 2
+i = 1
 
-Dir.foreach('data') do |category|
+Dir.foreach('documents') do |category|
   next if category == '.' or category == '..'
 
-  puts "#{i}/#{total_cats}"
+  puts "#{i}/#{total_cats}: #{category}"
   i += 1
 
   # do work on real items
-  Dir.foreach("data/#{category}") do |article|
+  Dir.foreach("documents/#{category}") do |article|
       next if article == '.' or article == '..'
 
-      File.open("data/#{category}/#{article}", "r") do |f|
+      File.open("documents/#{category}/#{article}", "r") do |f|
         content = f.read
 
         cls.train(category, content)
