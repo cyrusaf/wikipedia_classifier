@@ -30,7 +30,7 @@ func GetCategoryLinks() map[string][]string {
 
 // FetchCategoryDocumentLinks returns all links to documents given a sub-category.
 func FetchCategoryDocumentLinks(catName string, links []string) []string {
-	fmt.Println("\nFetching", len(links), "document links from "+catName+"...")
+	fmt.Println("Fetching", len(links), "document links from "+catName+"...")
 
 	var sublinks []string
 	for _, link := range links {
@@ -53,6 +53,7 @@ func FetchCategoryDocumentLinks(catName string, links []string) []string {
 // FetchCategoryDocuments returns all documents given an array of links to documents.
 func FetchCategoryDocuments(catName string, links []string) []string {
 	//fmt.Println("\nFetching", len(links), "documents from " + cat_name + "...")
+
 	bar := uiprogress.AddBar(len(links))
 	bar.AppendElapsed()
 	bar.PrependFunc(func(b *uiprogress.Bar) string {
@@ -90,6 +91,7 @@ func FetchCategoryDocuments(catName string, links []string) []string {
 	}
 
 	wg.Wait()
+
 	//fmt.Println("\nFetched", len(documents), "documents from " + cat_name)
 	return documents
 }
@@ -107,6 +109,7 @@ func main() {
 	for catName, links := range categorySublinks {
 		categoryDocs[catName] = FetchCategoryDocuments(catName, links)
 	}
+	uiprogress.Stop()
 
 	// Save documents to /documents
 	for catName, documents := range categoryDocs {
